@@ -7,9 +7,9 @@ void afficher_matrice(float matrice[3][3]);
 int main(){
 
     float matrice[3][3] = {
-    {1.5, -2.3, 0.7},
-    {3.1,  0.0, 4.2},
-    {-1.4, 2.8, 3.3}
+    {4, 8, 12},
+    {3, 8, 13},
+    {2, 9, 18}
     };
 
     printf("Voici le determinant de la matrice en utilisant la methode de Gauss : %f " , determinant(3 , matrice));
