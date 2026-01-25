@@ -38,7 +38,7 @@ int main(){
 // calculs
 
     a = determineA(n,points);
-    b = determineB(b,n,points);
+    b = determineB(a,n,points);
 
 // affichage 
 
@@ -54,7 +54,10 @@ float moyenne(int n , float** points , int col){
 }
 
 float determineB(float a , int n , float** points){
+    float sumX = moyenne(n,points,0);
+    float sumY = moyenne(n,points,1);
 
+    return sumY - a*sumX;
 }
 
 float determineA(int n , float** points){
