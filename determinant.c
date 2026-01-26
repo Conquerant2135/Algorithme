@@ -48,7 +48,7 @@ float determinant(int size , float matrice[3][3]) {
            for ( int k = i; k < size; k++) {
                 matrice[j][k] = matrice[j][k] - matrice[i][k]*pivot;
            }
-           afficher_matrice(matrice);
+        //    afficher_matrice(matrice);
         }
     }
     return matrice[0][0] * matrice[1][1] * matrice[2][2];

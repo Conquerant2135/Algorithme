@@ -9,16 +9,17 @@ float f(float x);
 int main()
 {
 // donnees 
-    float a = 0 , b = 1 , // bornes de l'integrale 
+    float a = 3 , b = 4, // bornes de l'integrale 
     aire = 4039,          // stockage de l'aire apres calcul
-    eps = 1e-7;           // epsilon pour verifier la convergence
-    int n = 1000;         // nombre de subdivision
+    eps = 1e-6;           // epsilon pour verifier la convergence
+    int n = 100;         // nombre de subdivision
 // calculs 
     aire = simpsons(a , b , n);
 // resultats 
     displayResult(a , b , aire , n , eps);
     return 0;
 }
+
 
 float simpsons(float a , float b , int n){
     float s1 = 0 , s2 = 0 , h = (b-a)/n;
@@ -49,5 +50,5 @@ void displayRes(float a , float b , float aire , int n ){
 }
 
 float f(float x){
-    return exp(sin(5.0*x));
+    return 40/(8-x*x*x);
 }
