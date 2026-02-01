@@ -44,6 +44,16 @@ void lagrange(float **points, int n)
         return;
     }
 
+    // fprintf(gp , "$points << EOD \n");
+
+    // for (int i = 0; i < n; i++)
+    // {
+    //     fprintf(gp, "%f %f\n", points[i][0], points[i][1]);
+    // }
+
+    // fprintf(gp , " EOD \n");
+
+
     int nb_pts = 200;
 
     float x_min = points[0][0];
@@ -52,7 +62,7 @@ void lagrange(float **points, int n)
     float step = (x_max - x_min) / (nb_pts - 1);
     float x = x_min;
 
-    fprintf(gp , "$data << EOD \n");
+    fprintf(gp , " $curve << EOD \n");
 
     for (int i = 0; i < nb_pts; i++)
     {
@@ -61,7 +71,7 @@ void lagrange(float **points, int n)
     }
 
     fprintf(gp, "EOD\n");
-    fprintf(gp, "plot $data with lines\n");
+    fprintf(gp, "plot $curve with lines\n");
 
     fflush(gp);
     pclose(gp);
