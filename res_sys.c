@@ -24,7 +24,7 @@ int main()
 	float*  b = NULL;
 	int* L = NULL;
 
-	getDataf("data.txt" , &dimension , &a , &b);
+	getDataf("data/data.txt" , &dimension , &a , &b);
 	
 	afficherMatrice(a , dimension);
 	afficherSolutions(b , dimension);
