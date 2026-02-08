@@ -16,7 +16,7 @@ int main()
     // nombre de points
     int n = 9;
     // alpha
-    float alpha = 0.1;
+    float alpha = 0.01;
 
     float **points = (float **)malloc(n * sizeof(float *));
     for (int i = 0; i < n; i++) points[i] = (float*) malloc(2*sizeof(float));
