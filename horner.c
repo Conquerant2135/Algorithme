@@ -9,7 +9,7 @@ void afficher_res(float px, float *coeff, float x, int n);
 int main()
 {
     // le nombre de coefficient du polynome
-    int n = 4;
+    int n = 5;
     // la liste des coefficients
     float *coeff = (float *)malloc(n * sizeof(float));
     // correspond au coeff 0 et ainsi de suite
@@ -17,6 +17,7 @@ int main()
     coeff[1] = 4;
     coeff[2] = 3;
     coeff[3] = 1;
+    coeff[4] = -19;
     // le x avec lequel on va evaluer notre polynome
     float x = 3;
     // variable pour contenir la solution;
@@ -31,6 +32,7 @@ int main()
 void m_afficher_pol_horner(int n, float *coeff)
 {
     printf(" \n P(x) = ");
+    // il faut peut etre rajouter un 3 eme aray en terme de temporaire comme cela pas de warning
     char pol_horner[20000];
     char temp[20000];
 
@@ -38,6 +40,8 @@ void m_afficher_pol_horner(int n, float *coeff)
 
     for (int i = n - 2; i >= 0; i--)
     {
+        // il faut regler le probleme de taille ici car ca peut causer probleme
+        // si ca seg ici veuillez utiliser l'autre fonction
         if (coeff[i] < 0)
             snprintf(temp, sizeof(temp), "( %s )*x%3.f", pol_horner, coeff[i]);
         else
@@ -89,7 +93,7 @@ float horner(int n, float *coeff, float x)
 void afficher_res(float px, float *coeff, float x, int n)
 {
     printf(" La valeur de notre polynome : \n ");
-    printf(" P(x) =");
+    printf(" \n P(x) =");
     for (int i = n; i > 0; i--)
     {
         if (coeff[i - 1] > 0 && i - 1 != n - 1)
@@ -109,10 +113,10 @@ void afficher_res(float px, float *coeff, float x, int n)
         }
     }
 
-    printf("Avec une polynome de horner de la forme : ");
+    printf("\n\n Avec une polynome de horner de la forme : ");
 
     m_afficher_pol_horner(n, coeff);
 
-    printf(" Et un resultat  :");
-    printf("\n P(%f) = %f \n", x, px);
+    printf("\n\n Et un resultat  :");
+    printf("\n P(%f) = %f \n\n", x, px);
 }
