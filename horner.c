@@ -16,7 +16,7 @@ int main()
     coeff[0] = 2;
     coeff[1] = 4;
     coeff[2] = 3;
-    coeff[3] = 1;
+    coeff[3] = 0;
     coeff[4] = -19;
     // le x avec lequel on va evaluer notre polynome
     float x = 3;
@@ -96,7 +96,7 @@ void afficher_res(float px, float *coeff, float x, int n)
     printf(" \n P(x) =");
     for (int i = n; i > 0; i--)
     {
-        if (coeff[i - 1] > 0 && i - 1 != n - 1)
+        if (coeff[i - 1] >= 0 && i - 1 != n - 1)
             printf("+");
 
         if (i - 1 == 0)
