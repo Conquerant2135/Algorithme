@@ -4,6 +4,7 @@
 float p(float x , int n , float** points);
 float pj(float x , int j , float** points , int n);
 void tracerCourbe(float** points,int n);
+void afficherGraphe(float** points , int n , float a , float b);
 void dessinerCourbe(float a ,float b);
 float determineB(float a , int n , float** points);
 float determineA(int n , float** points);
@@ -30,7 +31,30 @@ int main(){
 // affichage 
 
     afficherResultat(a,b,n);
-	tracerCourbe(points,n);
+	afficherGraphe(points,n , a ,b);
+}
+
+void afficherGraphe(float** points , int n , float a , float b)
+{
+    FILE* gp = popen("gnuplot -persist" , "w");
+    if (!gp)
+    {
+        perror("gnuplot not found please install");
+        return;
+    } 
+
+    fprintf(gp , "$points << EOD \n ");
+
+    for (int i = 0; i < n; i++)
+    {
+        fprintf(gp , "%f %f\n" , points[i][0] , points[i][1]);
+    }
+    
+    fprintf(gp , "EOD \n");
+
+    if (b < 0) {
+        fprintf(gp ,  "plot $points with points , %f*x%f \n" , a , b);
+    } else fprintf(gp ,  "plot $points with points , %f*x+%f \n" , a , b);
 }
 
 void tracerCourbe(float** points,int n){

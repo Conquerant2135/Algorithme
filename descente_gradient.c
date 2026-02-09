@@ -51,9 +51,6 @@ void afficherGraphe(float** points , int n , float a , float b)
     if (b < 0) {
         fprintf(gp ,  "plot $points with points , %f*x%f \n" , a , b);
     } else fprintf(gp ,  "plot $points with points , %f*x+%f \n" , a , b);
-    
-
-
 }
 
 float ecart(float a, float b, int n, float **points)
