@@ -19,10 +19,6 @@ int main()
     return 0;
 }
 
-void spline (float** points , int n) {
-    // implementation de la methode des splines 
-}
-
 void lagrange(float **points, int n)
 {
     FILE *gp = popen("gnuplot -persist", "w");
@@ -41,7 +37,7 @@ void lagrange(float **points, int n)
     float x = x_min;
     
     
-     fprintf(gp , "$data << EOD \n");
+    fprintf(gp , "$data << EOD \n");
 
 	for(int i = 0 ; i < n ; i++ ){
 	 		fprintf(gp , "%f %f\n" , points[i][0] , points[i][1]  );
@@ -59,7 +55,7 @@ void lagrange(float **points, int n)
     }
 
     fprintf(gp, "EOD\n");
-    fprintf(gp, "plot $curve with lines $data with points\n");
+    fprintf(gp, "plot $curve with lines , $data with points\n");
 
     fflush(gp);
     pclose(gp);

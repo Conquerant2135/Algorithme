@@ -3,9 +3,11 @@
 
 float p(float x , int n , float** points);
 float pj(float x , int j , float** points , int n);
+void tracerCourbe(float** points,int n);
 void dessinerCourbe(float a ,float b);
 float determineB(float a , int n , float** points);
 float determineA(int n , float** points);
+void getDataf(const char *fileName, int *dim, float ***tA);
 void afficherResultat(float a , float b ,int n);
 
 int main(){
@@ -13,26 +15,10 @@ int main(){
     float a;
     float b;
 // nombres de points
-    int n = 7;
-// liste des points 
+    int n = 0;
+    float **points = NULL;
 
-    float **points = (float **)malloc(n * sizeof(float *));
-    for (int i = 0; i < n; i++) points[i] = (float*) malloc(2*sizeof(float));
-    
-    points[0][0] = 0;
-    points[0][1] = 0;
-    points[1][0] = 1;
-    points[1][1] = 0.75;
-    points[2][0] = 2;
-    points[2][1] = 0;
-    points[3][0] = 3;
-    points[3][1] = 1.5;
-    points[4][0] = 4;
-    points[4][1] = -0.75;
-    points[5][0] = 5;
-    points[5][1] = -1;
-    points[6][0] = 6;
-    points[6][1] = 0.5;
+    getDataf("data/data_mmc.txt" , &n , &points);
     
 // calculs
 
@@ -41,12 +27,10 @@ int main(){
     
 // affichageDuResultat
 
-	
-
 // affichage 
 
     afficherResultat(a,b,n);
-	dessinerCourbe(a,b);
+	tracerCourbe(points,n);
 }
 
 void tracerCourbe(float** points,int n){
@@ -56,11 +40,11 @@ void tracerCourbe(float** points,int n){
 	// int signe = b < 0 ? 1 : 0;
 
 	if(gp){
-		fprintf(gp , "set term wxt size 800,600 \n");
+		// fprintf(gp , "set term wxt size 800,600 \n");
 		fprintf(gp , "set title 'Affichage du eo moa rangaha' \n");
-		fprintf(gp , "set style data linespoint\n");
+		// fprintf(gp , "set style data linespoint\n");
 		
-		fprintf(gp , "$data << EOF\n");
+		fprintf(gp , "$data << EOD \n");
 		
 		int nb = 200;
 		float x = 0;
@@ -69,8 +53,8 @@ void tracerCourbe(float** points,int n){
 			x += 0.1;	
 		}
 		
-		fprintf(gp , "EOF \n");
-		fprintf(gp , "plot $data\n");
+		fprintf(gp , "EOD \n");
+		fprintf(gp , "plot $data with lines\n");
 		fflush(gp);
 		pclose(gp);
 	}
@@ -89,7 +73,7 @@ float p(float x , int n , float** points){
 }
 
 float pj(float x , int j , float** points , int n){
-	float p = 0;
+	float p = 1;
 	
 	for(int k = 0 ; k < n ; k++){
 		if ( k != j)
@@ -162,3 +146,44 @@ void afficherResultat(float a, float b, int n)
     printf(" La droite obtenu de l'ajustement lineaire de %d points avec la methode des moindres carres est : \n ", n);
     printf(" y = %f*x + %f  \n ", a, b);
 }
+
+void getDataf(const char *fileName, int *dim, float ***tA) {
+    FILE *pf = fopen(fileName, "r");
+    if (!pf) {
+        perror("Probleme a l'ouverture du fichier");
+        exit(EXIT_FAILURE);
+    }
+
+    if (fscanf(pf, "%d", dim) != 1) {
+        perror("Erreur lecture dimension");
+        fclose(pf);
+        exit(EXIT_FAILURE);
+    }
+
+    float **A = (float **)malloc((*dim) * sizeof(float *));
+    if (!A) {
+        perror("Probleme d'allocation de A");
+        fclose(pf);
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < *dim; i++) {
+        A[i] = (float *)malloc(2 * sizeof(float));
+        if (!A[i]) {
+            perror("Probleme d'allocation d'une ligne de A");
+            fclose(pf);
+            exit(EXIT_FAILURE);
+        }
+
+        if (fscanf(pf, "%f %f", &A[i][0], &A[i][1]) != 2) {
+            perror("Erreur lecture des points");
+            fclose(pf);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    fclose(pf);
+
+    *tA = A;
+}
+

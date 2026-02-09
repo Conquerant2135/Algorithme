@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+void afficherGraphe(float** points , int n ,float a , float b);
 float gradB(float a, float b, int n, float **points);
 float gradA(float a, float b, int n, float **points);
+void getDataf(const char *fileName, int *dim, float ***tA);
 void descGrad(float *a, float *b, int n, float **points, float eps,float alpha);
 void afficherResultat(float a, float b, int n);
 
@@ -14,36 +16,44 @@ int main()
     // les points de depart
     float a = 1, b = 1;
     // nombre de points
-    int n = 9;
     // alpha
     float alpha = 0.01;
 
-    float **points = (float **)malloc(n * sizeof(float *));
-    for (int i = 0; i < n; i++) points[i] = (float*) malloc(2*sizeof(float));
+    int n = 0;
+    float **points = NULL;
+
+    getDataf("data/data_mmc.txt" , &n , &points);
     
-    points[0][0] = 1;
-    points[0][1] = 6.008;
-    points[1][0] =1.1;
-    points[1][1] = 5.257;
-    points[2][0] = 1.8;
-    points[2][1] = 9.549;
-    points[3][0] = 2.2;
-    points[3][1] = 11.098;
-    points[4][0] = 2.5;
-    points[4][1] = 15.722;
-    points[5][0] = 3.5;
-    points[5][1] =27.130;
-    points[6][0] = 3.7;
-    points[6][1] = 28.828;
-    points[7][0] = 4;
-    points[7][1] = 33.772;
-    points[8][0] = 5;
-    points[8][1] = 45.15;
-
-
     descGrad(&a, &b, n, points, eps,alpha);
 
+    afficherGraphe(points , n , a , b);
     afficherResultat(a, b, n);
+}
+
+void afficherGraphe(float** points , int n , float a , float b)
+{
+    FILE* gp = popen("gnuplot -persist" , "w");
+    if (!gp)
+    {
+        perror("gnuplot not found please install");
+        return;
+    } 
+
+    fprintf(gp , "$points << EOD \n ");
+
+    for (int i = 0; i < n; i++)
+    {
+        fprintf(gp , "%f %f\n" , points[i][0] , points[i][1]);
+    }
+    
+    fprintf(gp , "EOD \n");
+
+    if (b < 0) {
+        fprintf(gp ,  "plot $points with points , %f*x%f \n" , a , b);
+    } else fprintf(gp ,  "plot $points with points , %f*x+%f \n" , a , b);
+    
+
+
 }
 
 float ecart(float a, float b, int n, float **points)
@@ -101,3 +111,44 @@ void afficherResultat(float a, float b, int n)
     printf(" La droite obtenu de l'ajustement lineaire de %d points \n est : ", n);
     printf(" y = %f*x + %f  \n ", a, b);
 }
+
+void getDataf(const char *fileName, int *dim, float ***tA) {
+    FILE *pf = fopen(fileName, "r");
+    if (!pf) {
+        perror("Probleme a l'ouverture du fichier");
+        exit(EXIT_FAILURE);
+    }
+
+    if (fscanf(pf, "%d", dim) != 1) {
+        perror("Erreur lecture dimension");
+        fclose(pf);
+        exit(EXIT_FAILURE);
+    }
+
+    float **A = (float **)malloc((*dim) * sizeof(float *));
+    if (!A) {
+        perror("Probleme d'allocation de A");
+        fclose(pf);
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < *dim; i++) {
+        A[i] = (float *)malloc(2 * sizeof(float));
+        if (!A[i]) {
+            perror("Probleme d'allocation d'une ligne de A");
+            fclose(pf);
+            exit(EXIT_FAILURE);
+        }
+
+        if (fscanf(pf, "%f %f", &A[i][0], &A[i][1]) != 2) {
+            perror("Erreur lecture des points");
+            fclose(pf);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    fclose(pf);
+
+    *tA = A;
+}
+
