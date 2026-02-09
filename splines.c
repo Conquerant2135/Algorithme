@@ -41,16 +41,17 @@ void cSpline(float** points , int n , float* a , float* b , float* s2){
     
     fprintf(gp , "$data << EOD \n");
     
-    for(int j = 0 ; j < n - 1; j++ ){
-		for(int i = 0 ; i < nb_points ; i++ ){
-			fprintf(gp, "%f %f\n" , x , s(points,s2,a,b,j,x) );
-			x += step;
-		}
-		x_min = x_max;
-		x_max = points[j+1][0];
-		step = (x_max - x_min )/(nb_points-1);
-		x = x_min;
-	}
+    for (int j = 0; j < n - 1; j++) {
+        float x_min = points[j][0];
+        float x_max = points[j+1][0];
+        float step = (x_max - x_min) / (nb_points - 1);
+        float x = x_min;
+
+        for (int i = 0; i < nb_points; i++) {
+            fprintf(gp, "%f %f\n", x, s(points, s2, a, b, j, x));
+            x += step;
+        }
+    }
 	
 	fprintf(gp , "EOD \n");
 	
@@ -59,18 +60,16 @@ void cSpline(float** points , int n , float* a , float* b , float* s2){
     fprintf(gp , "\n");
 }
 
-float s(float** points , float* s2 , float* a , float* b , int j , float x){
-	float fact = 1/(6*points[j][0]);
-	float diff1 = points[j+1][0]-x;
-	float diff2 = x-points[j][0];
-	  
-	float elem1 = s2[j]*diff1*diff1*diff1;
-	float elem2 = s2[j+1]*diff2*diff2*diff2;
-	float aj = a[j]*diff1;
-	float bj = b[j]*diff2; 
-	
-	
-	return fact*(elem1+elem2)+aj+bj;
+float s(float **points, float *s2, float *a, float *b, int j, float x)
+{
+    float h = points[j+1][0] - points[j][0];
+    float dx1 = points[j+1][0] - x;
+    float dx2 = x - points[j][0];
+
+    return (s2[j]   * dx1*dx1*dx1 +
+            s2[j+1] * dx2*dx2*dx2) / (6.0f * h)
+           + a[j] * dx1
+           + b[j] * dx2;
 }
 
 // dans cet exemple on assume que les points x sont equidistant 
@@ -78,14 +77,19 @@ void coeff(float** points , int n , float** va , float** vb , float** vs2){
 	float lambda = 0.5 , rho = 0.5, dx = points[1][0] - points[0][0];
 	int j = 0;
 	float* Y = newVect(n-1);
-	float* s2 = newVect(n); s2[0]=0; s2[n-1]=0;
+	float* s2 = newVect(n); 
 	float* a = newVect(n-1);  
 	float* b = newVect(n-1);
+
+
+    s2[0] = 0.0f;
+    s2[n-1] = 0.0f;
 	
-	for (j = 1 ; j < n  -1 ; j++){
-		Y[j-1] = (6./(dx+dx))*( (points[j+1][1]-points[j][1])/dx- (points[j][1]-points[j-1][1])/dx);
-		// printf(" Y[%d] = %f  \n" , j , Y[j-1]);
-	}
+	for (int j = 1; j < n-1; j++) {
+        Y[j-1] = (6.0f / (2.0f * dx)) *
+                 ((points[j+1][1] - points[j][1]) / dx
+                - (points[j][1]   - points[j-1][1]) / dx);
+    }
 	
 	s2++;
 	solveS2(lambda , rho , Y , s2 , n);
@@ -93,9 +97,9 @@ void coeff(float** points , int n , float** va , float** vb , float** vs2){
 	
 	// etablissement de a et b 
 	for (j = 0 ; j < n - 1; j++){
-		a[j] = (points[j][1]/dx) - s2[j]*(dx/6);
-		b[j] = (points[j+1][1]/dx) - s2[j+1]*(dx/6);
-		// printf(" a[%d] = %f  b[%d] = %f \n" , j , a[j] , j , b[j]);	
+		a[j] = (points[j][1]   / dx) - (dx / 6.0f) * s2[j];
+        b[j] = (points[j+1][1] / dx) - (dx / 6.0f) * s2[j+1];
+        // printf(" a[%d] = %f  b[%d] = %f \n" , j , a[j] , j , b[j]);	
 	}
 	
 	*va = a;
