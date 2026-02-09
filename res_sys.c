@@ -171,7 +171,6 @@ float** matrice(int n) {
     return a;
 }
 
-
 void error(const char *msg) {
     printf("%s\n", msg);
     exit(EXIT_FAILURE);

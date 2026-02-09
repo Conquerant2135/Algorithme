@@ -62,7 +62,7 @@ void displayResult(float a , float b , float aire,  int n , float eps){
 }
 
 float trapezes(float a, float b, int n) {
-    float h = (b - a)/n; // le pas de l'integration
+    float h = (b-a)/n; // le pas de l'integration
     float x = a + h;     // stockage des points de division
     float sum = 0.0;     // somme des sous-intervalles 
 
